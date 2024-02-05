@@ -1,0 +1,14 @@
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\MonoPrviDan.exe
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\MonoPrviDan.deps.json
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\MonoPrviDan.runtimeconfig.json
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\MonoPrviDan.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\MonoPrviDan.pdb
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.GeneratedMSBuildEditorConfig.editorconfig
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.AssemblyInfoInputs.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.AssemblyInfo.cs
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.csproj.CoreCompileInputs.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\refint\MonoPrviDan.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.pdb
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\MonoPrviDan.genruntimeconfig.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\ref\MonoPrviDan.dll

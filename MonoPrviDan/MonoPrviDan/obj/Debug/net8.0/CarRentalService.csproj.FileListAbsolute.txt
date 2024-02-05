@@ -1,0 +1,14 @@
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\CarRentalService.exe
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\CarRentalService.deps.json
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\CarRentalService.runtimeconfig.json
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\CarRentalService.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\bin\Debug\net8.0\CarRentalService.pdb
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.GeneratedMSBuildEditorConfig.editorconfig
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.AssemblyInfoInputs.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.AssemblyInfo.cs
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.csproj.CoreCompileInputs.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\refint\CarRentalService.dll
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.pdb
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\CarRentalService.genruntimeconfig.cache
+D:\Mono\1Dan\MonoPrviDan\MonoPrviDan\obj\Debug\net8.0\ref\CarRentalService.dll
