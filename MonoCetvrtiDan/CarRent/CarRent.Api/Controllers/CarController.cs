@@ -15,13 +15,15 @@ using NpgsqlTypes;
 
 namespace CarRent.Api.Controllers
 {
+    [RoutePrefix("api/Car")]
     public class CarController : ApiController
     {
         private string connectionString = "host=localhost ;port=5432 ;Database=CarRent ;User ID=postgres ;Password=postgres";
 
-        // GET api/values
         [HttpGet]
-        public HttpResponseMessage Get([FromBody] CarFilter filter) //DONE
+        [Route("")]
+        // GET api/values
+        public IHttpActionResult GetAllCars([FromUri] CarFilter filter)
         {
             try
             {
@@ -29,8 +31,75 @@ namespace CarRent.Api.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT * FROM \"Car\"";
+                    string query = "SELECT * FROM \"Car\" WHERE 1=1";
+
+                    if (filter != null)
+                    {
+                        if (!string.IsNullOrEmpty(filter.Brand))
+                        {
+                            query += " AND \"Brand\" = @Brand";
+                        }
+
+                        if (!string.IsNullOrEmpty(filter.Model))
+                        {
+                            query += " AND \"Model\" = @Model";
+                        }
+
+                        if (filter.ManafactureDate.HasValue)
+                        {
+                            query += " AND \"ManafactureDate\" = @ManafactureDate";
+                        }
+
+                        if (filter.Mileage.HasValue)
+                        {
+                            query += " AND \"Mileage\" = @Mileage";
+                        }
+
+                        if (filter.InsuranceStatus.HasValue)
+                        {
+                            query += " AND \"InsuranceStatus\" = @InsuranceStatus";
+                        }
+
+                        if (filter.Available.HasValue)
+                        {
+                            query += " AND \"Available\" = @Available";
+                        }
+                    }
+
                     NpgsqlCommand command = new NpgsqlCommand(query, connection);
+
+                    if (filter != null)
+                    {
+                        if (!string.IsNullOrEmpty(filter.Brand))
+                        {
+                            command.Parameters.AddWithValue("@Brand", filter.Brand);
+                        }
+
+                        if (!string.IsNullOrEmpty(filter.Model))
+                        {
+                            command.Parameters.AddWithValue("@Model", filter.Model);
+                        }
+
+                        if (filter.ManafactureDate.HasValue)
+                        {
+                            command.Parameters.AddWithValue("@ManafactureDate", filter.ManafactureDate.Value);
+                        }
+
+                        if (filter.Mileage.HasValue)
+                        {
+                            command.Parameters.AddWithValue("@Mileage", filter.Mileage.Value);
+                        }
+
+                        if (filter.InsuranceStatus.HasValue)
+                        {
+                            command.Parameters.AddWithValue("@InsuranceStatus", filter.InsuranceStatus.Value);
+                        }
+
+                        if (filter.Available.HasValue)
+                        {
+                            command.Parameters.AddWithValue("@Available", filter.Available.Value);
+                        }
+                    }
 
                     NpgsqlDataReader reader = command.ExecuteReader();
                     List<Car> cars = new List<Car>();
@@ -50,40 +119,19 @@ namespace CarRent.Api.Controllers
                         cars.Add(car);
                     }
 
-                    List<Car> filteredCarsList = cars;
-                    if (filter != null)
-                    {
-                        if (!string.IsNullOrEmpty(filter.Brand))
-                            filteredCarsList = filteredCarsList.Where(c => c.Brand == filter.Brand).ToList();
-
-                        if (!string.IsNullOrEmpty(filter.Model))
-                            filteredCarsList = filteredCarsList.Where(c => c.Model == filter.Model).ToList();
-
-                        if (filter.ManafactureDate != 0)
-                            filteredCarsList = filteredCarsList.Where(c => c.ManafactureDate == filter.ManafactureDate).ToList();
-
-                        if (filter.Mileage != 0)
-                            filteredCarsList = filteredCarsList.Where(c => c.Mileage == filter.Mileage).ToList();
-
-                        if (filter.InsuranceStatus)
-                            filteredCarsList = filteredCarsList.Where(c => c.InsuranceStatus == filter.InsuranceStatus).ToList();
-
-                        if (filter.Available)
-                            filteredCarsList = filteredCarsList.Where(c => c.Available == filter.Available).ToList();
-                    }
-
-                    return Request.CreateResponse(HttpStatusCode.OK, filteredCarsList.Select(x => new CarView(x)));
+                    return Ok(cars.Select(x => new CarView(x)));
                 }
             }
-            catch 
+            catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return InternalServerError(ex);
             }
         }
 
         [HttpGet]
+        [Route("{id:guid}")]
         // GET api/values/5
-        public HttpResponseMessage Get(Guid id)
+        public IHttpActionResult GetCarById(Guid id)
         {
             try
             {
@@ -109,25 +157,25 @@ namespace CarRent.Api.Controllers
                                 InsuranceStatus = reader.GetBoolean(reader.GetOrdinal("InsuranceStatus")),
                                 Available = reader.GetBoolean(reader.GetOrdinal("Available"))
                             };
-                            return Request.CreateResponse(HttpStatusCode.OK, car);
+                            return Ok(new CarView(car));
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.NotFound, "No car found with the specified ID.");
+                            return NotFound();
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
 
-
         [HttpPost]
+        [Route("")]
         // POST api/values
-        public HttpResponseMessage Post([FromBody] Car car)
+        public IHttpActionResult CreateCar([FromUri] Car car)
         {
             try
             {
@@ -148,19 +196,19 @@ namespace CarRent.Api.Controllers
 
 
                     insertCommand.ExecuteNonQuery();
-                    return Request.CreateResponse(HttpStatusCode.OK, "Car has been successfully added!");
+                    return Ok("Car has been successfully added!");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return InternalServerError(ex);
             }
         }
 
-
         [HttpPut]
+        [Route("{id:guid}")]
         // PUT api/values/5
-        public HttpResponseMessage Put(Guid id, [FromBody] Car car)
+        public IHttpActionResult Put(Guid id, [FromUri] Car car)
         {
             try
             {
@@ -168,41 +216,84 @@ namespace CarRent.Api.Controllers
                 {
                     connection.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM \"Car\" WHERE \"Id\" = @Id";
-                    NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, connection);
-                    checkCommand.Parameters.AddWithValue("@Id", id);
+                    // Construct the base update query
+                    string updateQuery = "UPDATE \"Car\" SET";
+                    List<string> updateFields = new List<string>();
 
-                    //int carCount = (int)checkCommand.ExecuteScalar();
-                    //if (carCount == 0)
-                    //{
-                    //    return Request.CreateResponse(HttpStatusCode.NotFound, "Car with the specified ID not found.");
-                    //}
+                    // Check each field and add it to the update command if it's provided
+                    if (!string.IsNullOrEmpty(car.Brand))
+                    {
+                        updateFields.Add("\"Brand\" = @Brand");
+                    }
+                    if (!string.IsNullOrEmpty(car.Model))
+                    {
+                        updateFields.Add("\"Model\" = @Model");
+                    }
+                    if (car.ManafactureDate != default(int)) // Assuming default(int) means not provided
+                    {
+                        updateFields.Add("\"ManafactureDate\" = @ManafactureDate");
+                    }
+                    if (car.Mileage != default(int))
+                    {
+                        updateFields.Add("\"Mileage\" = @Mileage");
+                    }
+                    if (car.InsuranceStatus != default(bool))
+                    {
+                        updateFields.Add("\"InsuranceStatus\" = @InsuranceStatus");
+                    }
+                    if (car.Available != default(bool))
+                    {
+                        updateFields.Add("\"Available\" = @Available");
+                    }
 
-                    string updateQuery = "UPDATE \"Car\" SET \"Brand\" = @Brand, \"Model\" = @Model, \"ManafactureDate\" = @ManafactureDate, \"Mileage\" = @Mileage, \"InsuranceStatus\" = @InsuranceStatus, \"Available\" = @Available WHERE \"Id\" = @Id";
+                    // Join all update fields
+                    updateQuery += " " + string.Join(", ", updateFields);
+                    updateQuery += " WHERE \"Id\" = @Id";
+
                     NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection);
-                    updateCommand.Parameters.Add("@Id", NpgsqlDbType.Uuid).Value = car.Id;
-                    updateCommand.Parameters.Add("@Brand", NpgsqlDbType.Char).Value = car.Brand;
-                    updateCommand.Parameters.Add("@Model", NpgsqlDbType.Char).Value = car.Model;
-                    updateCommand.Parameters.Add("@ManafactureDate", NpgsqlDbType.Integer).Value = car.ManafactureDate;
-                    updateCommand.Parameters.Add("@Mileage", NpgsqlDbType.Integer).Value = car.Mileage;
-                    updateCommand.Parameters.Add("@InsuranceStatus", NpgsqlDbType.Bit).Value = car.InsuranceStatus;
-                    updateCommand.Parameters.Add("@Available", NpgsqlDbType.Bit).Value = car.Available;
+
+                    // Add parameters for fields that are provided
+                    updateCommand.Parameters.AddWithValue("@Id", id);
+                    if (!string.IsNullOrEmpty(car.Brand))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Brand", car.Brand);
+                    }
+                    if (!string.IsNullOrEmpty(car.Model))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Model", car.Model);
+                    }
+                    if (car.ManafactureDate != default(int))
+                    {
+                        updateCommand.Parameters.AddWithValue("@ManafactureDate", car.ManafactureDate);
+                    }
+                    if (car.Mileage != default(int))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Mileage", car.Mileage);
+                    }
+                    if (car.InsuranceStatus != default(bool))
+                    {
+                        updateCommand.Parameters.AddWithValue("@InsuranceStatus", car.InsuranceStatus);
+                    }
+                    if (car.Available != default(bool))
+                    {
+                        updateCommand.Parameters.AddWithValue("@Available", car.Available);
+                    }
 
                     updateCommand.ExecuteNonQuery();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, "Car has been successfully updated!");
+                    return Ok("Car has been successfully updated!");
                 }
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
 
-
         [HttpDelete]
+        [Route("{id:guid}")]
         // DELETE api/values/5
-        public HttpResponseMessage Delete(Guid id)
+        public IHttpActionResult Delete(Guid id)
         {
             try
             {
@@ -218,18 +309,19 @@ namespace CarRent.Api.Controllers
 
                     if (rowsAffected > 0)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, "Car has been successfully deleted!");
+                        return Ok("Car has been successfully deleted!");
                     }
                     else
                     {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Failed to delete car!");
+                        return InternalServerError();
                     }
                 }
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
+
     }
 }

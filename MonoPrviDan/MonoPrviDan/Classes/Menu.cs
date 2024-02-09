@@ -13,7 +13,7 @@
             Console.WriteLine("6. Sklopi ugovor");
             Console.WriteLine("7. Raskini ugovor");
             Console.WriteLine("8. Izlaz");
-            Console.Write("Odaberi opciju (1-7): ");
+            Console.Write("Odaberi opciju (1-8): ");
         }
     }
 }

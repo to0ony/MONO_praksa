@@ -9,9 +9,9 @@ namespace CarRent.Api.Models
     {
         public string Brand { get; set; }
         public string Model { get; set; }
-        public int ManafactureDate { get; set; }
-        public int Mileage { get; set; }
-        public bool InsuranceStatus { get; set; }
-        public bool Available { get; set; }
+        public int? ManafactureDate { get; set; }
+        public int? Mileage { get; set; }
+        public bool? InsuranceStatus { get; set; }
+        public bool? Available { get; set; }
     }
 }

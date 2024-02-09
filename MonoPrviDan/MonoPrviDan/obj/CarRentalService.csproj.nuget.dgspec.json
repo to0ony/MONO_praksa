@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Mono\\1Dan\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj": {}
+    "C:\\Users\\anton\\Source\\Repos\\to0ony\\MONO_praksa\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj": {}
   },
   "projects": {
-    "D:\\Mono\\1Dan\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj": {
+    "C:\\Users\\anton\\Source\\Repos\\to0ony\\MONO_praksa\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Mono\\1Dan\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj",
+        "projectUniqueName": "C:\\Users\\anton\\Source\\Repos\\to0ony\\MONO_praksa\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj",
         "projectName": "CarRentalService",
-        "projectPath": "D:\\Mono\\1Dan\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj",
+        "projectPath": "C:\\Users\\anton\\Source\\Repos\\to0ony\\MONO_praksa\\MonoPrviDan\\MonoPrviDan\\CarRentalService.csproj",
         "packagesPath": "C:\\Users\\anton\\.nuget\\packages\\",
-        "outputPath": "D:\\Mono\\1Dan\\MonoPrviDan\\MonoPrviDan\\obj\\",
+        "outputPath": "C:\\Users\\anton\\Source\\Repos\\to0ony\\MONO_praksa\\MonoPrviDan\\MonoPrviDan\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\anton\\AppData\\Roaming\\NuGet\\NuGet.Config",
