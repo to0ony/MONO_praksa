@@ -211,7 +211,6 @@ namespace CarRent.Repository
             }
         }
 
-
         public void DeleteCar(Guid id)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString))
