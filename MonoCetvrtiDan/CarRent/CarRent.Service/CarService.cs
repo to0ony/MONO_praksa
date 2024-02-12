@@ -15,6 +15,11 @@ namespace CarRent.Service
     {
         private readonly ICarRepository carRepository;
 
+        public CarService(ICarRepository carRepository)
+        {
+            this.carRepository = carRepository;
+        }
+
         public CarService()
         {
             carRepository = new CarRepository();

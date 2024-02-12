@@ -26,7 +26,12 @@ namespace CarRent.WebApi.Controllers
     [RoutePrefix("api/Car")]
     public class CarController : ApiController
     {
-        private readonly ICarService carService = new CarService();
+        private readonly ICarService carService;
+
+        public CarController(ICarService carService)
+        {
+            this.carService = carService;
+        }
 
         [HttpGet]
         [Route("")]
