@@ -13,7 +13,7 @@ namespace CarRent.Repository.Common
         List<ICar> GetAllCars(CarFilter filter);
         ICar GetCarById(Guid Id);
         void CreateCar(ICar car);
-        void UpdateCar(Guid Id,ICar car);
+        Task<bool> UpdateCar(Guid Id,ICar car);
         void DeleteCar(Guid Id);
     }
 }

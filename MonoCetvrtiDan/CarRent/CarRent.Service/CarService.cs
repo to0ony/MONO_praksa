@@ -56,11 +56,12 @@ namespace CarRent.Service
             }
         }
 
-        public void UpdateCar(Guid id, ICar car)
+        //ASYNC HERE!
+        public Task<bool> UpdateCar(Guid id, ICar car)
         {
             try
             {
-                carRepository.UpdateCar(id, car);
+                return carRepository.UpdateCar(id, car);
             }
             catch(Exception ex)
             {

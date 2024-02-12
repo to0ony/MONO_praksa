@@ -18,6 +18,7 @@ using System.Drawing.Text;
 using CarRent.Service.Common;
 using CarRent.Service;
 using CarRent.Model;
+using System.Threading.Tasks;
 
 
 namespace CarRent.WebApi.Controllers
@@ -84,10 +85,11 @@ namespace CarRent.WebApi.Controllers
             return Ok();
         }
 
+        //ASYNC HERE!
         [HttpPut]
         [Route("{id:guid}")]
         // PUT api/values/5
-        public IHttpActionResult UpdateCar(Guid id, [FromUri] Car updatedCar)
+        public async Task<IHttpActionResult> UpdateCar(Guid id, [FromUri] Car updatedCar)
         {
             if(updatedCar == null)
             {
@@ -101,7 +103,7 @@ namespace CarRent.WebApi.Controllers
 
             try
             {
-                carService.UpdateCar(id, new Car()
+                bool updated = await carService.UpdateCar(id, new Car()
                 {
                     Brand = updatedCar.Brand,
                     Model = updatedCar.Model,
@@ -109,8 +111,10 @@ namespace CarRent.WebApi.Controllers
                     InsuranceStatus = updatedCar.InsuranceStatus,
                     Available = updatedCar.Available,
                     ManafactureDate = updatedCar.ManafactureDate
-                }); ;
-                var car = carService.GetCarById(id);
+                }); 
+                
+                if (updated) return Ok();
+                return BadRequest();
             }
             catch (Exception ex)
             {

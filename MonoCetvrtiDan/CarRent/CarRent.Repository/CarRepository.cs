@@ -136,8 +136,11 @@ namespace CarRent.Repository
             }
         }
 
-        public void UpdateCar(Guid id, ICar updatedCar)
+        //ASYNC HERE!
+        public async Task<bool> UpdateCar(Guid id, ICar updatedCar)
         {
+            int rowChanged;
+
             ICar car = GetCarById(id);
             if (car == null)
             {
@@ -207,8 +210,9 @@ namespace CarRent.Repository
                     updateCommand.Parameters.Add("@Available", NpgsqlDbType.Bit).Value = updatedCar.Available;
                 }
 
-                updateCommand.ExecuteNonQuery();
+                rowChanged = await updateCommand.ExecuteNonQueryAsync();
             }
+            return rowChanged != 0;
         }
 
         public void DeleteCar(Guid id)
