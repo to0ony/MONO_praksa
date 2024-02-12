@@ -120,7 +120,6 @@ namespace CarRent.WebApi.Controllers
             {
                 return InternalServerError(ex);
             }
-            return Ok();
         }
 
         [HttpDelete]
