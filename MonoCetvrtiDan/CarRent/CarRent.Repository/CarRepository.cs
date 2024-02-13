@@ -183,32 +183,7 @@ namespace CarRent.Repository
                 updateQuery += " WHERE \"Id\" = @Id";
 
                 NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection);
-
-                updateCommand.Parameters.AddWithValue("@Id", id);
-                if (!string.IsNullOrEmpty(updatedCar.Brand))
-                {
-                    updateCommand.Parameters.AddWithValue("@Brand", updatedCar.Brand);
-                }
-                if (!string.IsNullOrEmpty(updatedCar.Model))
-                {
-                    updateCommand.Parameters.AddWithValue("@Model", updatedCar.Model);
-                }
-                if (updatedCar.ManafactureDate != null)
-                {
-                    updateCommand.Parameters.AddWithValue("@ManafactureDate", updatedCar.ManafactureDate);
-                }
-                if (updatedCar.Mileage != null)
-                {
-                    updateCommand.Parameters.AddWithValue("@Mileage", updatedCar.Mileage);
-                }
-                if (updatedCar.InsuranceStatus != null)
-                {
-                    updateCommand.Parameters.Add("@InsuranceStatus", NpgsqlDbType.Bit).Value = updatedCar.InsuranceStatus;
-                }
-                if (updatedCar.Available != null)
-                {
-                    updateCommand.Parameters.Add("@Available", NpgsqlDbType.Bit).Value = updatedCar.Available;
-                }
+                AddCarParameters(updateCommand, id, updatedCar);
 
                 rowChanged = await updateCommand.ExecuteNonQueryAsync();
             }
@@ -284,5 +259,33 @@ namespace CarRent.Repository
             command.CommandText = query;
         }
 
+        private void AddCarParameters(NpgsqlCommand command, Guid id, ICar updatedCar)
+        {
+            command.Parameters.AddWithValue("@Id", id);
+            if (!string.IsNullOrEmpty(updatedCar.Brand))
+            {
+                command.Parameters.AddWithValue("@Brand", updatedCar.Brand);
+            }
+            if (!string.IsNullOrEmpty(updatedCar.Model))
+            {
+                command.Parameters.AddWithValue("@Model", updatedCar.Model);
+            }
+            if (updatedCar.ManafactureDate != null)
+            {
+                command.Parameters.AddWithValue("@ManafactureDate", updatedCar.ManafactureDate);
+            }
+            if (updatedCar.Mileage != null)
+            {
+                command.Parameters.AddWithValue("@Mileage", updatedCar.Mileage);
+            }
+            if (updatedCar.InsuranceStatus != null)
+            {
+                command.Parameters.Add("@InsuranceStatus", NpgsqlDbType.Bit).Value = updatedCar.InsuranceStatus;
+            }
+            if (updatedCar.Available != null)
+            {
+                command.Parameters.Add("@Available", NpgsqlDbType.Bit).Value = updatedCar.Available;
+            }
+        }
     }
 }

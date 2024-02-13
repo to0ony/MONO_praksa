@@ -46,7 +46,7 @@ namespace CarRent.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError,ex);
             }
         }
 
@@ -118,12 +118,12 @@ namespace CarRent.WebApi.Controllers
                     ManafactureDate = updatedCar.ManafactureDate
                 }); 
                 
-                if (updated) return Request.CreateResponse(Ok());
+                if (updated) return Request.CreateResponse(HttpStatusCode.OK);
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(InternalServerError(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError,ex);
             }
         }
 
