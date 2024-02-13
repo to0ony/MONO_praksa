@@ -15,7 +15,7 @@ namespace CarRent.Repository
 {
     public class CarRepository : ICarRepository
     {
-        public List<ICar> GetAllCars(CarFilter filter)
+        public async Task<List<ICar>> GetAllCars(CarFilter filter)
         {
             NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString);
             List<ICar> cars = new List<ICar>();
@@ -32,81 +32,76 @@ namespace CarRent.Repository
                 command.CommandText = queryBuilder.ToString();
                 try
                 {
-                    connection.Open();
-                    NpgsqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Car car = new Car
+                    await connection.OpenAsync();
+                    using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                        while (await reader.ReadAsync())
                         {
-                            Id = (Guid)reader["Id"],
-                            Brand = reader["Brand"].ToString(),
-                            Model = reader["Model"].ToString(),
-                            ManafactureDate = (int)reader["ManafactureDate"],
-                            Mileage = (int)reader["Mileage"],
-                            InsuranceStatus = (bool)reader["InsuranceStatus"],
-                            Available = (bool)reader["Available"]
-                        };
-                        cars.Add(car);
-                    }
+                            Car car = new Car
+                            {
+                                Id = (Guid)reader["Id"],
+                                Brand = reader["Brand"].ToString(),
+                                Model = reader["Model"].ToString(),
+                                ManafactureDate = (int)reader["ManafactureDate"],
+                                Mileage = (int)reader["Mileage"],
+                                InsuranceStatus = (bool)reader["InsuranceStatus"],
+                                Available = (bool)reader["Available"]
+                            };
+                            cars.Add(car); 
+                        }
                 }
                 catch (NpgsqlException ex)
                 {
                     throw ex;
                 }
-                finally
-                {
-                    connection.Close();
-                }
             }
             return cars;
         }
 
-        public ICar GetCarById(Guid id)
+        public async Task<ICar> GetCarById(Guid id)
         {
-            NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString);
-            ICar car = null;
-            string commandText = "SELECT * FROM \"Car\" WHERE \"Id\" = @Id";
-
-            using (connection)
+            using (NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString))
             {
-                NpgsqlCommand npgsqlCommand = new NpgsqlCommand();
-                npgsqlCommand.CommandText = commandText;
-                npgsqlCommand.Connection = connection;
+                ICar car = null;
+                string commandText = "SELECT * FROM \"Car\" WHERE \"Id\" = @Id";
 
-                npgsqlCommand.Parameters.AddWithValue("@Id", id);
-
-                try
+                using (NpgsqlCommand npgsqlCommand = new NpgsqlCommand(commandText, connection))
                 {
-                    connection.Open();
-                    NpgsqlDataReader reader = npgsqlCommand.ExecuteReader();
-                    while (reader.Read())
+                    npgsqlCommand.Parameters.AddWithValue("@Id", id);
+
+                    try
                     {
-                        car = new Car()
+                        await connection.OpenAsync();
+
+                        using (NpgsqlDataReader reader = await npgsqlCommand.ExecuteReaderAsync())
                         {
-                            Id = reader.GetGuid(reader.GetOrdinal("Id")),
-                            Brand = reader.GetString(reader.GetOrdinal("Brand")),
-                            Model = reader.GetString(reader.GetOrdinal("Model")),
-                            ManafactureDate = reader.GetInt32(reader.GetOrdinal("ManafactureDate")),
-                            Mileage = reader.GetInt32(reader.GetOrdinal("Mileage")),
-                            InsuranceStatus = reader.GetBoolean(reader.GetOrdinal("InsuranceStatus")),
-                            Available = reader.GetBoolean(reader.GetOrdinal("Available"))
-                        };
+                            if (await reader.ReadAsync())
+                            {
+                                car = new Car()
+                                {
+                                    Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                                    Brand = reader.GetString(reader.GetOrdinal("Brand")),
+                                    Model = reader.GetString(reader.GetOrdinal("Model")),
+                                    ManafactureDate = reader.GetInt32(reader.GetOrdinal("ManafactureDate")),
+                                    Mileage = reader.GetInt32(reader.GetOrdinal("Mileage")),
+                                    InsuranceStatus = reader.GetBoolean(reader.GetOrdinal("InsuranceStatus")),
+                                    Available = reader.GetBoolean(reader.GetOrdinal("Available"))
+                                };
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle or log the exception appropriately
+                        throw ex;
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    connection.Close();
-                }
+                return car;
             }
-            return car;
         }
 
-        public void CreateCar(ICar newCar)
+        public async Task<bool> CreateCar(ICar newCar)
         {
+            int rowChanged;
             NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString);
             using (connection)
             {
@@ -123,7 +118,8 @@ namespace CarRent.Repository
                 try
                 {
                     connection.Open();
-                    insertCommand.ExecuteNonQuery();
+                    rowChanged = await insertCommand.ExecuteNonQueryAsync();
+                    return rowChanged != 0;
                 }
                 catch (Exception ex)
                 {
@@ -136,12 +132,11 @@ namespace CarRent.Repository
             }
         }
 
-        //ASYNC HERE!
         public async Task<bool> UpdateCar(Guid id, ICar updatedCar)
         {
             int rowChanged;
 
-            ICar car = GetCarById(id);
+            Task<ICar> car = GetCarById(id);
             if (car == null)
             {
                 throw new Exception("No car with such ID in base!");
@@ -190,7 +185,7 @@ namespace CarRent.Repository
             return rowChanged != 0;
         }
 
-        public void DeleteCar(Guid id)
+        public async Task<bool> DeleteCar(Guid id)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString))
             {
@@ -200,19 +195,19 @@ namespace CarRent.Repository
 
                 try
                 {
-                    connection.Open();
-                    deleteCommand.ExecuteNonQuery();
+                    await connection.OpenAsync();
+
+                    int rowsAffected = await deleteCommand.ExecuteNonQueryAsync();
+
+                    return rowsAffected > 0;
                 }
-                catch(Exception ex)
+                catch (NpgsqlException ex)
                 {
                     throw ex;
                 }
-                finally
-                {
-                    connection.Close();
-                }
             }
         }
+
 
         private void ApplyFilter(NpgsqlCommand command, CarFilter filter)
         {

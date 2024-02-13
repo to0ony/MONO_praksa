@@ -36,44 +36,51 @@ namespace CarRent.WebApi.Controllers
         [HttpGet]
         [Route("")]
         // GET api/values
-        public HttpResponseMessage GetAllCars([FromUri] CarFilter filter)
+        public async Task<HttpResponseMessage> GetAllCarsAsync([FromUri] CarFilter filter)
         {
-            List<ICar> cars;
             try
             {
-                cars = carService.GetAllCars(filter);
-                return Request.CreateResponse(HttpStatusCode.OK,cars);
+                List<ICar> cars = await carService.GetAllCars(filter);
+
+                if (cars == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, cars);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError,ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
 
         [HttpGet]
         [Route("{id:guid}")]
         // GET api/values/5
-        public HttpResponseMessage GetCarById(Guid id)
+        public async Task<HttpResponseMessage> GetCarByIdAsync(Guid id)
         {
-            ICar car = carService.GetCarById(id);
             try
             {
+                ICar car = await carService.GetCarById(id);
+
                 if (car == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK,car);
+
+                return Request.CreateResponse(HttpStatusCode.OK, car);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError,ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
 
         [HttpPost]
         [Route("")]
         // POST api/values
-        public HttpResponseMessage CreateCar([FromUri] Car car)
+        public async Task<HttpResponseMessage> CreateCarAsync([FromUri] Car car)
         {
             if (car == null)
             {
@@ -81,26 +88,26 @@ namespace CarRent.WebApi.Controllers
             }
             try
             {
-                carService.CreateCar(car);
+                bool created = await carService.CreateCar(car);
+                if (created) return Request.CreateResponse(HttpStatusCode.OK);
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
             catch(Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError,ex);
             }
-            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
-        //ASYNC HERE!
         [HttpPut]
         [Route("{id:guid}")]
         // PUT api/values/5
-        public async Task<HttpResponseMessage> UpdateCar(Guid id, [FromUri] Car updatedCar)
+        public async Task<HttpResponseMessage> UpdateCarAsync(Guid id, [FromUri] Car updatedCar)
         {
             if(updatedCar == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-            ICar carInBase = carService.GetCarById(id);
+            Task<ICar> carInBase = carService.GetCarById(id);
             if(carInBase == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -130,13 +137,13 @@ namespace CarRent.WebApi.Controllers
         [HttpDelete]
         [Route("{id:guid}")]
         // DELETE api/values/5
-        public HttpResponseMessage DeleteCar(Guid id)
+        public async Task<HttpResponseMessage> DeleteCarAsync(Guid id)
         {
             if(id == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-            ICar car = carService.GetCarById(id);
+            Task<ICar> car = carService.GetCarById(id);
             if (car == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -144,13 +151,20 @@ namespace CarRent.WebApi.Controllers
 
             try
             {
-                carService.DeleteCar(id);
+                bool deleted = await carService.DeleteCar(id);
+                if (deleted)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError);
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Request.CreateResponse(InternalServerError(ex));
             }
-            return Request.CreateResponse(Ok());
         }
     }
 }

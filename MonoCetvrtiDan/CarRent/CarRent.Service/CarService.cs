@@ -25,7 +25,7 @@ namespace CarRent.Service
             carRepository = new CarRepository();
         }
 
-        public List<ICar> GetAllCars(CarFilter filter)
+        public Task<List<ICar>> GetAllCars(CarFilter filter)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace CarRent.Service
             }
         }
 
-        public ICar GetCarById(Guid id)
+        public Task<ICar> GetCarById(Guid id)
         {
             try
             {
@@ -49,11 +49,11 @@ namespace CarRent.Service
             }
         }
 
-        public void CreateCar(ICar car)
+        public Task<bool> CreateCar(ICar car)
         {
             try
             {
-                carRepository.CreateCar(car);
+                return carRepository.CreateCar(car);
             }
             catch (Exception ex)
             {
@@ -61,7 +61,6 @@ namespace CarRent.Service
             }
         }
 
-        //ASYNC HERE!
         public Task<bool> UpdateCar(Guid id, ICar car)
         {
             try
@@ -74,11 +73,11 @@ namespace CarRent.Service
             }
         }
 
-        public void DeleteCar(Guid Id)
+        public Task<bool> DeleteCar(Guid Id)
         {
             try
             {
-                carRepository.DeleteCar(Id);
+                return carRepository.DeleteCar(Id);
             }
             catch (Exception ex)
             {

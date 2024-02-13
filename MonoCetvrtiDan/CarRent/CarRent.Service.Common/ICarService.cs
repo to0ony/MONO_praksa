@@ -10,10 +10,10 @@ namespace CarRent.Service.Common
 {
     public interface ICarService
     {
-        List<ICar> GetAllCars(CarFilter filter);
-        ICar GetCarById(Guid id);
-        void CreateCar(ICar car);
+        Task<List<ICar>> GetAllCars(CarFilter filter);
+        Task<ICar> GetCarById(Guid id);
+        Task<bool> CreateCar(ICar car);
         Task<bool> UpdateCar(Guid Id, ICar car);
-        void DeleteCar(Guid Id);
+        Task<bool> DeleteCar(Guid Id);
     }
 }
