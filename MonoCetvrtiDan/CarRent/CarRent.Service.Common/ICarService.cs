@@ -1,4 +1,5 @@
 ﻿using CarRent.Common;
+using CarRent.Common.Filters;
 using CarRent.Model.Common;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace CarRent.Service.Common
 {
     public interface ICarService
     {
-        Task<List<ICar>> GetAllCars(CarFilter filter);
+        Task<List<ICar>> GetAllCars(Paging paging, Sorting sorting, CarFilter filterr);
         Task<ICar> GetCarById(Guid id);
         Task<bool> CreateCar(ICar car);
         Task<bool> UpdateCar(Guid Id, ICar car);

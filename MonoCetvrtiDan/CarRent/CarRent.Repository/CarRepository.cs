@@ -1,4 +1,5 @@
 ﻿using CarRent.Common;
+using CarRent.Common.Filters;
 using CarRent.Model;
 using CarRent.Model.Common;
 using CarRent.Repository.Common;
@@ -15,7 +16,7 @@ namespace CarRent.Repository
 {
     public class CarRepository : ICarRepository
     {
-        public async Task<List<ICar>> GetAllCars(CarFilter filter)
+        public async Task<List<ICar>> GetAllCars(Paging paging, Sorting sorting, CarFilter filter)
         {
             NpgsqlConnection connection = new NpgsqlConnection(Connection.ConnectionString);
             List<ICar> cars = new List<ICar>();
@@ -29,11 +30,19 @@ namespace CarRent.Repository
                 {
                     ApplyFilter(command, filter);
                 }
+                // Dodavanje paging-a i sorting-a na upit
+                if (sorting != null)
+                {
+                    ApplySorting(queryBuilder, sorting);
+                }
+                ApplyPaging(queryBuilder, paging);
+
                 command.CommandText = queryBuilder.ToString();
                 try
                 {
                     await connection.OpenAsync();
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
                         while (await reader.ReadAsync())
                         {
                             Car car = new Car
@@ -46,8 +55,9 @@ namespace CarRent.Repository
                                 InsuranceStatus = (bool)reader["InsuranceStatus"],
                                 Available = (bool)reader["Available"]
                             };
-                            cars.Add(car); 
+                            cars.Add(car);
                         }
+                    }
                 }
                 catch (NpgsqlException ex)
                 {
@@ -281,6 +291,17 @@ namespace CarRent.Repository
             {
                 command.Parameters.Add("@Available", NpgsqlDbType.Bit).Value = updatedCar.Available;
             }
+        }
+
+        private void ApplySorting(StringBuilder queryBuilder, Sorting sorting)
+        {
+            queryBuilder.Append($" ORDER BY \"{sorting.SortBy}\" {sorting.SortOrder}");
+        }
+
+        private void ApplyPaging(StringBuilder queryBuilder, Paging paging)
+        {
+            int offset = (paging.PageNum - 1) * paging.PageSize;
+            queryBuilder.Append($" OFFSET {offset} LIMIT {paging.PageSize}");
         }
     }
 }

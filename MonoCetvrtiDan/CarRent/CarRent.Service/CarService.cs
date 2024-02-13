@@ -1,4 +1,5 @@
 ﻿using CarRent.Common;
+using CarRent.Common.Filters;
 using CarRent.Model.Common;
 using CarRent.Repository;
 using CarRent.Repository.Common;
@@ -25,11 +26,11 @@ namespace CarRent.Service
             carRepository = new CarRepository();
         }
 
-        public Task<List<ICar>> GetAllCars(CarFilter filter)
+        public Task<List<ICar>> GetAllCars(Paging paging, Sorting sorting ,CarFilter filter)
         {
             try
             {
-                return carRepository.GetAllCars(filter);
+                return carRepository.GetAllCars(paging,sorting,filter);
             }
             catch (Exception ex)
             {
