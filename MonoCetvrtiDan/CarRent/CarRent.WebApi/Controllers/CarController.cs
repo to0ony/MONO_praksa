@@ -69,7 +69,7 @@ namespace CarRent.WebApi.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, car);
+                return Request.CreateResponse(HttpStatusCode.OK, new CarView(car));
             }
             catch (Exception ex)
             {

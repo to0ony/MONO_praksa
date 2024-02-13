@@ -1,4 +1,5 @@
 ﻿using CarRent.Model;
+using CarRent.Model.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,12 @@ namespace CarRent.WebApi.Models
     {
         public string Brand { get; set; }
         public string Model { get; set; }
-        public int ManafactureDate { get; set; }
-        public CarView(Car carView)
+        public int? ManafactureDate { get; set; }
+        public CarView(ICar carView)
         {
             Brand = carView.Brand;
             Model = carView.Model;
+            ManafactureDate = carView.ManafactureDate;
         }
     }
 }
