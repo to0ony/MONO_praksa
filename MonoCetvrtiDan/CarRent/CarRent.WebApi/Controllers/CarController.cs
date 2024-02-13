@@ -19,6 +19,7 @@ using CarRent.Service.Common;
 using CarRent.Service;
 using CarRent.Model;
 using System.Threading.Tasks;
+using CarRent.Common.Filters;
 
 
 namespace CarRent.WebApi.Controllers
@@ -36,18 +37,41 @@ namespace CarRent.WebApi.Controllers
         [HttpGet]
         [Route("")]
         // GET api/values
-        public async Task<HttpResponseMessage> GetAllCarsAsync([FromUri] CarFilter filter)
+        public async Task<HttpResponseMessage> GetAllCarsAsync(
+            int pageNum = 1,
+            int pageSize = 10,
+            string sortBy = "Model",
+            string sortOrder = "ASC",
+            string searchQuery = null,
+            string brand = null,
+            string model = null,
+            int? mileage = null,
+            bool? insuranceStatus = null,
+            bool? available = null,
+            int? manufactureDate = null)
         {
             try
             {
-                List<ICar> cars = await carService.GetAllCars(filter);
+                Paging paging = new Paging { PageNum = pageNum, PageSize = pageSize };
+                Sorting sorting = new Sorting { SortBy = sortBy, SortOrder = sortOrder };
+                CarFilter filter = new CarFilter {
+                    SearchQuery = searchQuery, 
+                    Brand = brand, 
+                    Model = model,
+                    Mileage = mileage,
+                    InsuranceStatus = insuranceStatus,
+                    Available = available,
+                    ManafactureDate = manufactureDate
+                };
+
+                List<ICar> cars = await carService.GetAllCars(paging, sorting, filter);
 
                 if (cars == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, cars);
+                return Request.CreateResponse(HttpStatusCode.OK, cars.Select(car => new CarView(car)));
             }
             catch (Exception ex)
             {
