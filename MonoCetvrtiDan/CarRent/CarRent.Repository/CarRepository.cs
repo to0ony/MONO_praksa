@@ -30,6 +30,7 @@ namespace CarRent.Repository
                 {
                     ApplyFilter(command, filter);
                 }
+                //test
                 // Dodavanje paging-a i sorting-a na upit
                 if (sorting != null)
                 {
