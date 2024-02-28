@@ -104,7 +104,7 @@ namespace CarRent.WebApi.Controllers
         [HttpPost]
         [Route("")]
         // POST api/values
-        public async Task<HttpResponseMessage> CreateCarAsync([FromUri] Car car)
+        public async Task<HttpResponseMessage> CreateCarAsync([FromBody] Car car)
         {
             if (car == null)
             {
@@ -125,7 +125,7 @@ namespace CarRent.WebApi.Controllers
         [HttpPut]
         [Route("{id:guid}")]
         // PUT api/values/5
-        public async Task<HttpResponseMessage> UpdateCarAsync(Guid id, [FromUri] Car updatedCar)
+        public async Task<HttpResponseMessage> UpdateCarAsync(Guid id, [FromBody] Car updatedCar)
         {
             if(updatedCar == null)
             {

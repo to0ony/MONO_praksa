@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import CarCreator_classComp from './components/CarCreator_classComp';
+import CarCreator_classComp from './components/CarCreator';
 import CarTable from './components/CarTable';
 import './index.css';
 
@@ -24,7 +24,7 @@ function App() {
             <Header/>
             <div className="container">
                 <div className="left"> 
-                    <CarCreator_classComp onAddCar={handleAddCar}/>
+                    <CarCreator onAddCar={handleAddCar}/>
                 </div>
                 <div className="right"> 
                     <CarTable data={cars}/>
