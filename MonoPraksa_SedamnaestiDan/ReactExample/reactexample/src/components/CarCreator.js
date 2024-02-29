@@ -1,65 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { createCar } from '../services/api';
+import { v4 as uuidv4 } from 'uuid';
 
-function CarCreator({ onAddCar }) {
+function CarCreator({ onCarCreated }) {
     const [formData, setFormData] = useState({
-        brand: '',
-        model: '',
-        color: '',
-        mileage: '',
-        year: ''
+        Id: '', // Dodano polje za ID
+        Brand: '',
+        Model: '',
+        Mileage: 0,
+        ManafactureDate: '',
+        InsuranceStatus: false,
+        Available: true
     });
-
-    useEffect(() => {
-        const storedCars = JSON.parse(localStorage.getItem('cars')) || [];
-        setFormData({
-            brand: '',
-            model: '',
-            color: '',
-            mileage: '',
-            year: ''
-        });
-    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+        setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onAddCar(formData);
-        setFormData({
-            brand: '',
-            model: '',
-            color: '',
-            mileage: '',
-            year: ''
-        });
-
-        // Spremanje podataka u localStorage
-        const storedCars = JSON.parse(localStorage.getItem('cars')) || [];
-        const updatedCars = [...storedCars, formData];
-        localStorage.setItem('cars', JSON.stringify(updatedCars));
+        try {
+            const carDataWithId = { ...formData, Id: uuidv4() };
+            const created = await createCar(carDataWithId);
+            console.log(created);
+            if (created) {
+                onCarCreated();
+                setFormData({
+                    Id: '',
+                    Brand: '',
+                    Model: '',
+                    Mileage: 0,
+                    ManafactureDate: '',
+                    InsuranceStatus: false,
+                    Available: true
+                });
+            }
+        } catch (error) {
+            console.error('Error creating car:', error);
+        }
     };
 
     return (
-        <form className="form-container" onSubmit={handleSubmit}>
-            <h2>Add Car</h2>
-            <label>Brand:</label>
-            <input type="text" name="brand" value={formData.brand} onChange={handleChange} required />
-            <label>Model:</label>
-            <input type="text" name="model" value={formData.model} onChange={handleChange} required />
-            <label>Color:</label>
-            <input type="text" name="color" value={formData.color} onChange={handleChange} required />
-            <label>Mileage:</label>
-            <input type="number" name="mileage" value={formData.mileage} onChange={handleChange} required />
-            <label>Year:</label>
-            <input type="number" name="year" value={formData.year} onChange={handleChange} required />
-            <button type="submit">Add Car</button>
-        </form>
+    <form className="form-container" onSubmit={handleSubmit}>
+        <h2>Add Car</h2>
+        <label>Brand:</label>
+        <input type="text" name="Brand" value={formData.Brand} onChange={handleChange} required />
+        <label>Model:</label>
+        <input type="text" name="Model" value={formData.Model} onChange={handleChange} required />
+        <label>Mileage:</label>
+        <input type="number" name="Mileage" value={formData.Mileage} onChange={handleChange} required />
+        <label>Manufacture Date:</label>
+        <input type="text" name="ManafactureDate" value={formData.ManafactureDate} onChange={handleChange} />
+        <label>Insurance Status:</label>
+        <select name="InsuranceStatus" value={formData.InsuranceStatus} onChange={handleChange} className="select-input">
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
+        </select>
+        <label>Available:</label>
+        <select name="Available" value={formData.Available} onChange={handleChange} className="select-input">
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
+        </select>
+        <button type="submit">Add Car</button>
+</form>
+
     );
 }
 

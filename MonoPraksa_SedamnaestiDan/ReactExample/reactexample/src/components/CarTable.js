@@ -1,38 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import CarUpdate from './CarUpdate';
+import React, { useState } from 'react';
+import CarUpdate from './CarUpdate'
+import { deleteCar, updateCar } from '../services/api';
 
-function CarTable({ data }) {
-    const [cars, setCars] = useState(data);
-    const [editingIndex, setEditingIndex] = useState(null);
+function CarTable({ cars, onCarDeleted, onCarUpdated }) {
+    const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [selectedCar, setSelectedCar] = useState(null);
 
-    useEffect(() => {
-        setCars(data);
-    }, [data]);
-
-    const handleEditCar = (index) => {
-        setEditingIndex(index);
-    };
-
-    const handleUpdateCar = (updatedCar) => {
-        const updatedCars = cars.map((car, index) => {
-            if (index === editingIndex) {
-                return updatedCar;
+    const handleDeleteClick = async (id) => {
+        try {
+            const deleted = await deleteCar(id); 
+            if (deleted) {
+                onCarDeleted();
             }
-            return car;
-        });
-        setCars(updatedCars);
-        setEditingIndex(null);
-        localStorage.setItem('cars', JSON.stringify(updatedCars));
+        } catch (error) {
+            console.error('Error deleting car:', error);
+        }
     };
 
-    const handleCancelUpdate = () => {
-        setEditingIndex(null);
+    const handleUpdateClick = (car) => {
+        setSelectedCar(car); 
+        setShowUpdateForm(true); 
     };
 
-    const handleDeleteCar = (index) => {
-        const updatedCars = cars.filter((car, carIndex) => carIndex !== index);
-        setCars(updatedCars);
-        localStorage.setItem('cars', JSON.stringify(updatedCars));
+    const handleUpdateSubmit = async (id, updatedCarData) => {
+        try {
+            const updated = await updateCar(id, updatedCarData); 
+            if (updated) {
+                onCarUpdated();
+                setShowUpdateForm(false); 
+            }
+        } catch (error) {
+            console.error('Error updating car:', error);
+        }
     };
 
     return (
@@ -42,39 +41,26 @@ function CarTable({ data }) {
                     <tr>
                         <th>Brand</th>
                         <th>Model</th>
-                        <th>Color</th>
-                        <th>Mileage</th>
-                        <th>Year</th>
+                        <th>Manufacture Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {cars.map((item, index) => (
+                    {cars.map((car, index) => (
                         <tr key={index}>
-                            <td>{item.brand}</td>
-                            <td>{item.model}</td>
-                            <td>{item.color}</td>
-                            <td>{item.mileage}</td>
-                            <td>{item.year}</td>
+                            <td>{car.brand}</td>
+                            <td>{car.model}</td>
+                            <td>{car.manafactureDate}</td>
                             <td>
-                                {editingIndex === index ? (
-                                    <button onClick={handleCancelUpdate}>Cancel</button>
-                                ) : (
-                                    <div>
-                                        <button onClick={() => handleEditCar(index)}>Edit</button>
-                                        <button onClick={() => handleDeleteCar(index)}>Delete</button>
-                                    </div>
-                                )}
+                                <button onClick={() => handleDeleteClick(car.id)}>Delete</button>
+                                <button onClick={() => handleUpdateClick(car)}>Edit</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            {editingIndex !== null && (
-                <CarUpdate
-                    car={cars[editingIndex]}
-                    onUpdateCar={handleUpdateCar}
-                />
+            {showUpdateForm && (
+                <CarUpdate car={selectedCar} onUpdate={(updatedCarData) => handleUpdateSubmit(selectedCar.id, updatedCarData)} />
             )}
         </div>
     );

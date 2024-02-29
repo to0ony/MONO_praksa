@@ -13,7 +13,6 @@ namespace CarRent.WebApi
             // Web API configuration and services
             var cors = new EnableCorsAttribute("http://localhost:3000", "*", "*");
             config.EnableCors(cors);
-
             // Web API routes
             config.MapHttpAttributeRoutes();
 

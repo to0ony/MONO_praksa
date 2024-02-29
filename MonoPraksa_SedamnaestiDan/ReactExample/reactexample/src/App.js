@@ -1,37 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import CarCreator_classComp from './components/CarCreator';
-import CarTable from './components/CarTable';
+import Main from './pages/Main';
+import CarDashboard from './pages/CarDashboard';
 import './index.css';
 
 function App() {
-    const [cars, setCars] = useState([]);
-
-    useEffect(() => {
-        const storedCars = JSON.parse(localStorage.getItem('cars')) || [];
-        console.log("Stored cars:", storedCars);
-        setCars(storedCars);
-    }, []);
-
-    const handleAddCar = (newCar) => {
-        const updatedCars = [...cars, newCar];
-        setCars(updatedCars);
-        localStorage.setItem('cars', JSON.stringify(updatedCars));
-    };
-
-    return (
-        <div>
-            <Header/>
-            <div className="container">
-                <div className="left"> 
-                    <CarCreator onAddCar={handleAddCar}/>
-                </div>
-                <div className="right"> 
-                    <CarTable data={cars}/>
-                </div>
-            </div>
-        </div>
-    );    
+  return (
+    <Router>
+      <div>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/car-dashboard" element={<CarDashboard />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
